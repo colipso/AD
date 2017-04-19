@@ -16,7 +16,7 @@ import random
 import urllib2
 from pythainlp.segment import segment
 import time
-
+import jieba
 
 class Log:
     def __init__(self,logPath = '/home/hp/CODE/AD/LOG/log.txt'):
@@ -82,6 +82,14 @@ class DealWithText:
             Log().write(e , 'Error')
             
         return False
+    def writeList(self , textList , fileFullPath , segment = '  '):
+        '''
+        '''
+        s = ''
+        for t in textList:
+            s += t + segment
+        self.write(s , fileFullPath)
+        return s
     
 class TranslateUseBaidu:
     def __init__(self , appid = '20170417000045035' , secretKey = 'rBp0CfklktvWAAHoMNfJ' , isProxy = False):
@@ -145,6 +153,25 @@ class CutThaiLanguage:
             Log().write(e , 'Error')
         return False
     
+    
+class CutChineseLanguage:
+    def __init__(self):
+        '''
+        '''
+        pass
+    def cutSentence(self , sentence):
+        '''
+        '''
+        try:
+            result = jieba.cut(sentence)
+            returnList = []
+            for r in result:
+                returnList.append(r)
+            return returnList
+        except Exception as e:
+            Log().write(e,'Error')
+            return False
+    
 
 languageFile = '/home/hp/CODE/AD/data/thai.txt'
 DWT = DealWithText()
@@ -172,3 +199,9 @@ thaiCutF = '/home/hp/CODE/AD/data/thaicut.txt'
 DWT.write(thai2en , thai2enF)
 DWT.write(thai2zh , thai2zhF)
 DWT.write(cutThaiStrings , thaiCutF)
+
+chineseFile = '/home/hp/CODE/AD/data/zh.txt'
+zhStrings = DWT.read(chineseFile)
+cutZhList = CutChineseLanguage().cutSentence(zhStrings)
+zhCutF = '/home/hp/CODE/AD/data/zhcut.txt'
+DWT.writeList(cutZhList , zhCutF)
